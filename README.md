@@ -83,7 +83,7 @@ Hermes Agent
 ```
 
 Everything runs locally: a 1 GB embedding model and a 1.1 GB reranker on the same
-2-vCPU box as the agent. No memory API, no per-query cost.
+CPU-only box as the agent. No memory API, no per-query cost.
 
 ## Repo layout
 
