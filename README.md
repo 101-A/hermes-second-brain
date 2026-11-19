@@ -1,13 +1,10 @@
-# A Second Brain That Says "I Don't Know"
+# A memory system that says "I don't know"
 
-An agent memory system that recalls by meaning, refuses to answer when the match is
-weak, and is measured against its own baseline instead of vibes.
-
-Most "AI memory" projects ship a retrieval stack and call it done. This one keeps a
-number attached to every change — and publishes the changes that made it *worse*.
+Agent memory that recalls by meaning and refuses when the match is weak. Every change
+gets a number attached, including the changes that made it worse.
 
 ```
-26 questions + 5 unanswerable, measured on a 126-fact store
+26 questions + 5 unanswerable, on a 126-fact store
 
 keyword only (FTS5)      85% recall@1    5/5 false answers
 hybrid stack             85% recall@1    4/5 false answers    112 ms
@@ -15,10 +12,11 @@ hybrid + relevance gate  92% recall@1    0/5 false answers    112 ms + gate
 Hindsight 1.2.1 (local)  64% recall@1    0/5 false answers    ~20,000 ms
 ```
 
-### Thresholds do not transfer (measured)
+## The threshold does not travel
 
-The production gate is **−1.9**. Applied unchanged to the bundled 26-fact demo corpus it
-scored **77%** recall@1 — it refused correct answers. Re-calibrated on that corpus:
+The gate that works on the production store is -1.9. Run unchanged against the bundled
+26-fact demo corpus, it scored 77% recall@1, because it refused correct answers. After
+calibrating on that corpus:
 
 ```
 python3 scripts/benchmark.py data/demo_corpus.json --calibrate
@@ -31,42 +29,41 @@ python3 scripts/benchmark.py data/demo_corpus.json --gate -3.11
   + gate -3.11   96% recall@1   0/5 false answers
 ```
 
-Same code, same reranker, different corpus, different threshold. **Calibrate; never copy
-a gate.** Note the demo's gap is only 0.05 wide — a 26-fact corpus is too small to trust
-for calibration. The production corpus had 0.76.
+Same code, same reranker, different data, different threshold. Calibrate it, do not copy
+it. The demo corpus leaves a gap of only 0.05, which is a sign that 26 facts are too few
+to calibrate against. The production store left 0.76.
 
-## The problem with "it remembers everything"
+## Why a gate instead of a score cutoff
 
-A memory that always returns something is worse than one that admits ignorance. In a
-personal assistant, a confidently wrong fact about your manager, your bills, or your
-kids is a failure you cannot see — the agent repeats it, and you believe it.
+A memory that always returns something is worse than one that admits it has nothing. In a
+personal assistant, a confident wrong answer about your manager or your bills is a failure
+you never notice. The agent repeats it and you believe it.
 
-Two things fixed that here.
-
-**1. A gate, not a threshold on the retrieval score.** Keyword and embedding scores
-overlap between real and unanswerable questions (measured: answerable 0.29–0.42 vs junk
-0.26–0.32), so no cut-off on them can abstain. A cross-encoder separates cleanly:
+Similarity scores cannot tell you when to stay quiet. Answerable and unanswerable questions
+overlap (0.29 to 0.42 against 0.26 to 0.32), so any cutoff that removes the junk removes
+real answers too. A cross-encoder that reads the question and the candidate together does
+separate them:
 
 ```
-answerable top-1    −1.53 .. +1.70
-unanswerable top-1  −2.29 .. −3.18      → gate at −1.9
+answerable    -1.53 .. +1.70
+unanswerable  -2.29 .. -3.18     gate at -1.9
 ```
 
-**2. Let the reranker pick among the top three, not just judge the top one.** This is
-where an accuracy *gain* came from the same component that was supposed to only guard
-against errors: 85% → 92% recall@1, with false answers going to zero.
+The same reranker also picks among the top three instead of judging only the first, and
+that is what moved recall@1 from 85% to 92%. A safety component turned into an accuracy
+gain because choosing one of three is easier than judging one candidate alone.
 
 ## What was tried and rejected
 
 | change | result | verdict |
 |---|---|---|
-| Hindsight 1.2.1 (local, CPU) | 64% recall@1, 86% @3, ~20 s/query, 124 facts → 288 stored items | slower and less accurate |
-| reranker reorders the whole pool | recall@1 79% → 71%, 4x latency | rejected |
-| English-only reranker as the gate | scored a *correct* Arabic match −4.21 | replaced with a multilingual one |
-| bigger embeddings alone | top-1 −, top-3 +, 2x latency | kept only with the gate |
+| Hindsight 1.2.1 (local, CPU) | 64% recall@1, 86% @3, ~20 s/query, 124 facts became 288 stored items | slower and less accurate |
+| reranker reorders the whole pool | recall@1 79% to 71%, 4x latency | rejected |
+| English-only reranker as the gate | scored a correct Arabic match at -4.21 | replaced with a multilingual one |
+| bigger embeddings alone | top-1 down, top-3 up, 2x latency | kept only with the gate |
 
-Every one of these is in this repo's history because "we tried it and it was worse" is
-the most useful thing a benchmark can say.
+These are in the history because "we tried it and it was worse" is the most useful thing a
+benchmark can publish.
 
 ## Architecture
 
@@ -82,17 +79,17 @@ Hermes Agent
                                  └─ below gate → "I don't know"
 ```
 
-Everything runs locally: a 1 GB embedding model and a 1.1 GB reranker on the same
-CPU-only box as the agent. No memory API, no per-query cost.
+Everything runs locally: a 1 GB embedding model and a 1.1 GB reranker on the same CPU-only
+box as the agent. There is no memory API and no per-query cost.
 
 ## Repo layout
 
 ```
-docs/method.md          how the benchmark is built and why it is 26 questions
+docs/method.md          how the benchmark is built and why it has 26 questions
 scripts/memory_ask.py   reference implementation of the gate
-scripts/benchmark.py    self-contained: corpus in, recall@1/@3 + false answers out
-scripts/embed_server.py local embeddings + /v1/rerank service (stdlib HTTP)
-data/demo_corpus.json   synthetic corpus, 26 probes + 5 unanswerable
+scripts/benchmark.py    corpus in, recall@1/@3 and false answers out
+scripts/embed_server.py local embeddings and /v1/rerank service (stdlib HTTP)
+data/demo_corpus.json   synthetic corpus, 26 probes and 5 unanswerable questions
 ```
 
 ## Reproduce
@@ -103,14 +100,17 @@ python3 scripts/benchmark.py data/demo_corpus.json
 python3 scripts/memory_ask.py "what is the demo subject's blood type"   # refuses
 ```
 
-The published numbers come from the production plugin (FTS + embeddings + HRR + trust),
-which `benchmark.py` approximates with its embedding leg; the gate behaves identically.
+The published numbers come from the production plugin, which also uses keyword search and
+trust scoring. `benchmark.py` approximates that with its embedding leg, and the gate
+behaves the same way in both.
 
-## Limits, stated
+## Limits
 
-- 26 questions is small: one question ≈ 4 points. Treat gaps as directional.
-- Cross-lingual retrieval is unreliable. Facts and queries are stored in English; a
-  non-Latin query is refused with an explanation instead of returning nothing.
-- 44 entity names in the author's store are provisional guesses; there is no merge queue.
+- 26 questions is a small set. One question is worth about 4 points, so read the gaps as
+  direction rather than precision.
+- Cross-language retrieval is unreliable. Facts and queries are stored in English, and a
+  query without Latin letters is refused with an explanation instead of returning nothing.
+- 44 entity names in the author's store are unconfirmed guesses, and there is no queue to
+  merge them.
 
 MIT licensed.
