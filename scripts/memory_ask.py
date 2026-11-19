@@ -84,10 +84,14 @@ def main():
     ap.add_argument("--corpus", default="data/demo_corpus.json")
     ap.add_argument("--k", type=int, default=3)
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--gate", type=float, default=None,
+                    help="override the gate; otherwise the corpus 'gate' field, else GATE env")
     a = ap.parse_args()
     if not os.path.exists(a.corpus):
         sys.exit(f"corpus not found: {a.corpus} (run from the repo root)")
-    out = answer_or_refuse(a.query, demo_search(a.query, a.corpus, a.k))
+    corpus = json.load(open(a.corpus))
+    gate = a.gate if a.gate is not None else float(corpus.get("gate", GATE))
+    out = answer_or_refuse(a.query, demo_search(a.query, a.corpus, a.k), gate=gate)
     if a.json:
         print(json.dumps(out, indent=1))
     elif out["answer"]:

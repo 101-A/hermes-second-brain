@@ -1,5 +1,7 @@
 {
   "_note": "Synthetic corpus for the demo. Every person, place, and tool name here is invented; no real user data is included.",
+  "gate": -3.11,
+  "_gate_note": "Calibrated for THIS corpus with benchmark.py --calibrate. Do not copy it to another store.",
   "facts": [
     {
       "id": 1,

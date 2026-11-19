@@ -100,6 +100,11 @@ python3 scripts/benchmark.py data/demo_corpus.json
 python3 scripts/memory_ask.py "what is the demo subject's blood type"   # refuses
 ```
 
+The demo corpus carries its own calibrated gate in a `gate` field, and both scripts read
+it. That is deliberate: a threshold copied from another store refuses correct answers, so
+the corpus travels with the number that was measured on it. Override with `--gate`, or
+recompute with `--calibrate`.
+
 The published numbers come from the production plugin, which also uses keyword search and
 trust scoring. `benchmark.py` approximates that with its embedding leg, and the gate
 behaves the same way in both.

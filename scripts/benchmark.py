@@ -53,11 +53,13 @@ def main():
     ap.add_argument("--no-gate", action="store_true")
     ap.add_argument("--calibrate", action="store_true",
                     help="print the score ranges and the gate they imply, then exit")
-    ap.add_argument("--gate", type=float, default=GATE)
+    ap.add_argument("--gate", type=float, default=None,
+                    help="override the gate; otherwise the corpus 'gate' field, else GATE env")
     ap.add_argument("--k", type=int, default=3)
     a = ap.parse_args()
 
     c = json.load(open(a.corpus))
+    gate = a.gate if a.gate is not None else float(c.get("gate", GATE))
     facts = c["facts"]
     texts = [f["text"] for f in facts]
     ids = [f["id"] for f in facts]
@@ -92,7 +94,7 @@ def main():
         if not a.no_gate:
             scores = rerank(p["q"], docs)
             best = max(range(len(docs)), key=lambda i: scores.get(i, -99.0))
-            if scores.get(best, -99.0) >= a.gate:
+            if scores.get(best, -99.0) >= gate:
                 g1 += got[best] == p["expect"]
 
     fp = gfp = 0
@@ -100,17 +102,17 @@ def main():
         got, docs = top(q, a.k)
         fp += bool(got)
         if not a.no_gate:
-            gfp += best_score(q, docs) >= a.gate
+            gfp += best_score(q, docs) >= gate
 
     n, m = len(c["probes"]), len(c.get("abstain", []))
     print(f"facts {len(facts)} · probes {n} · unanswerable {m}")
     print(f"  retrieval      recall@1 {r1}/{n} ({r1/n:.0%})  recall@{a.k} {r3}/{n} ({r3/n:.0%})"
           f"  false answers {fp}/{m}")
     if not a.no_gate:
-        print(f"  + gate {a.gate}   recall@1 {g1}/{n} ({g1/n:.0%})"
+        print(f"  + gate {gate}   recall@1 {g1}/{n} ({g1/n:.0%})"
               f"                      false answers {gfp}/{m}")
         if g1 < r1:
-            print("  warning: the gate cost you correct answers — recalibrate with --calibrate",
+            print("  warning: the gate cost you correct answers, recalibrate with --calibrate",
                   file=sys.stderr)
 
 
