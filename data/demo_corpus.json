@@ -1,0 +1,222 @@
+{
+  "_note": "Synthetic corpus for the demo. Every person, place, and tool name here is invented; no real user data is included.",
+  "facts": [
+    {
+      "id": 1,
+      "text": "Prefers short answers: lead with the conclusion, then at most three supporting points."
+    },
+    {
+      "id": 2,
+      "text": "Works Monday to Friday, 08:00-16:00 local time."
+    },
+    {
+      "id": 3,
+      "text": "Primary model is atlas-3-mini served through a local gateway."
+    },
+    {
+      "id": 4,
+      "text": "Fallback chain: atlas-3-mini, then cedar-2-flash, then local-qwen."
+    },
+    {
+      "id": 5,
+      "text": "Main workstation is a laptop with 32 GB RAM and a 2 TB drive, dual boot."
+    },
+    {
+      "id": 6,
+      "text": "Home server: 4 vCPU, 16 GB RAM, Ubuntu 24.04, reachable by SSH key at ~/.ssh/demo-key."
+    },
+    {
+      "id": 7,
+      "text": "Backups: weekly archive to ~/archive/ with the last four kept."
+    },
+    {
+      "id": 8,
+      "text": "Calendar writes go only to the 'Work' and 'Personal' calendars."
+    },
+    {
+      "id": 9,
+      "text": "Email drafts use the display name 'Nadia's Assistant' and are never sent automatically."
+    },
+    {
+      "id": 10,
+      "text": "Meeting notes become decision, owner, and deadline; anything else is dropped."
+    },
+    {
+      "id": 11,
+      "text": "Dislikes em dashes and exclamation marks in written output."
+    },
+    {
+      "id": 12,
+      "text": "Prefers tables over prose when comparing more than three options."
+    },
+    {
+      "id": 13,
+      "text": "Tracks expenses in a spreadsheet with monthly tabs, not in an app."
+    },
+    {
+      "id": 14,
+      "text": "Runs every Wednesday at 06:30, 8 km, on the riverside loop."
+    },
+    {
+      "id": 15,
+      "text": "Allergic to shellfish; carries a rennase tablet in the bag."
+    },
+    {
+      "id": 16,
+      "text": "Reads two newsletters daily: a systems-design one and a markets one."
+    },
+    {
+      "id": 17,
+      "text": "Learning Rust; working through the book a chapter a week."
+    },
+    {
+      "id": 18,
+      "text": "Prefers the dark theme everywhere, with a serif font for reading."
+    },
+    {
+      "id": 19,
+      "text": "Phone is on silent after 21:00; only calls from two contacts ring through."
+    },
+    {
+      "id": 20,
+      "text": "Coffee: flat white, two shots, no sugar, before 11:00 only."
+    },
+    {
+      "id": 21,
+      "text": "Current project is a static site generator in Go, deployed to a single VPS."
+    },
+    {
+      "id": 22,
+      "text": "Rejected using a managed vector database; wants everything local."
+    },
+    {
+      "id": 23,
+      "text": "Keeps a reading list in a single markdown file, one line per book."
+    },
+    {
+      "id": 24,
+      "text": "Password manager is the only place credentials are stored; never in notes."
+    },
+    {
+      "id": 25,
+      "text": "Prefers voice notes over long typed messages when commuting."
+    },
+    {
+      "id": 26,
+      "text": "Reviews spending on the first of each month; saves 20 percent of income."
+    }
+  ],
+  "probes": [
+    {
+      "q": "how should answers be written",
+      "expect": 1
+    },
+    {
+      "q": "which model is the primary one",
+      "expect": 3
+    },
+    {
+      "q": "what happens if the main model fails",
+      "expect": 4
+    },
+    {
+      "q": "how much memory does the laptop have",
+      "expect": 5
+    },
+    {
+      "q": "what are the home server specs",
+      "expect": 6
+    },
+    {
+      "q": "how often are backups taken",
+      "expect": 7
+    },
+    {
+      "q": "which calendars can be written to",
+      "expect": 8
+    },
+    {
+      "q": "what name goes on email drafts",
+      "expect": 9
+    },
+    {
+      "q": "what should meeting notes turn into",
+      "expect": 10
+    },
+    {
+      "q": "does she like em dashes",
+      "expect": 11
+    },
+    {
+      "q": "tables or paragraphs for comparisons",
+      "expect": 12
+    },
+    {
+      "q": "where are expenses tracked",
+      "expect": 13
+    },
+    {
+      "q": "when does she run",
+      "expect": 14
+    },
+    {
+      "q": "any food allergies",
+      "expect": 15
+    },
+    {
+      "q": "which newsletters does she read",
+      "expect": 16
+    },
+    {
+      "q": "what language is she learning",
+      "expect": 17
+    },
+    {
+      "q": "light or dark theme",
+      "expect": 18
+    },
+    {
+      "q": "does the phone ring at night",
+      "expect": 19
+    },
+    {
+      "q": "how does she take her coffee",
+      "expect": 20
+    },
+    {
+      "q": "what is she building right now",
+      "expect": 21
+    },
+    {
+      "q": "does she want a hosted vector database",
+      "expect": 22
+    },
+    {
+      "q": "where is the reading list kept",
+      "expect": 23
+    },
+    {
+      "q": "where do passwords live",
+      "expect": 24
+    },
+    {
+      "q": "voice notes or typed messages",
+      "expect": 25
+    },
+    {
+      "q": "how much does she save",
+      "expect": 26
+    },
+    {
+      "q": "what time does work start",
+      "expect": 2
+    }
+  ],
+  "abstain": [
+    "what is her blood type",
+    "which bank does she use",
+    "how many siblings does she have",
+    "what is her passport number",
+    "which car does she drive"
+  ]
+}
